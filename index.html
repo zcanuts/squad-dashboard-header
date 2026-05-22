@@ -3,364 +3,141 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Squad Portal Legado</title>
+<title>Squad Header</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html, body {
-    width: 100%; height: 100%;
-    overflow: hidden;
-    background: #0a0f1e;
-  }
-
-  body {
-    font-family: 'IBM Plex Mono', monospace;
-    position: relative;
-  }
-
-  canvas#grid {
-    position: absolute;
-    inset: 0;
-    width: 100%; height: 100%;
-    z-index: 0;
-    opacity: 0.18;
-  }
-
-  .scanlines {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 3px,
-      rgba(0,0,0,0.08) 3px,
-      rgba(0,0,0,0.08) 4px
-    );
-    pointer-events: none;
-  }
-
-  .noise {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 200px 200px;
-    pointer-events: none;
-  }
-
-  .glow-left {
-    position: absolute;
-    left: -60px; top: -40px;
-    width: 320px; height: 220px;
-    background: radial-gradient(ellipse at center, rgba(0,120,212,0.22) 0%, transparent 70%);
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  .glow-right {
-    position: absolute;
-    right: 0; bottom: -40px;
-    width: 260px; height: 200px;
-    background: radial-gradient(ellipse at center, rgba(0,188,242,0.1) 0%, transparent 70%);
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  .container {
-    position: relative;
-    z-index: 10;
-    width: 100%; height: 100%;
-    display: flex;
-    align-items: center;
-    padding: 0 28px;
-    gap: 0;
-  }
-
-  .logo-wrap {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 72px; height: 72px;
-    border-radius: 10px;
-    background: rgba(0,120,212,0.12);
-    border: 1px solid rgba(0,120,212,0.35);
-    margin-right: 20px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .logo-wrap::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(0,120,212,0.15) 0%, transparent 60%);
-  }
-
-  .logo-wrap img {
-    width: 52px;
-    height: auto;
-    position: relative;
-    z-index: 1;
-    filter: drop-shadow(0 0 8px rgba(0,150,255,0.4));
-  }
-
-  .divider {
-    width: 1px;
-    height: 52px;
-    background: linear-gradient(to bottom, transparent, rgba(0,120,212,0.6), transparent);
-    margin-right: 20px;
-    flex-shrink: 0;
-  }
-
-  .info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-  }
-
-  .squad-name {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 0.06em;
-    line-height: 1;
-    text-shadow: 0 0 24px rgba(0,120,212,0.5);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .squad-name .accent {
-    color: #00b4ff;
-  }
-
-  .squad-name .tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    font-weight: 500;
-    color: #00b4ff;
-    background: rgba(0,180,255,0.1);
-    border: 1px solid rgba(0,180,255,0.3);
-    padding: 2px 8px;
-    border-radius: 3px;
-    letter-spacing: 0.1em;
-    vertical-align: middle;
-  }
-
-  .meta {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    flex-wrap: wrap;
-  }
-
-  .meta-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    color: rgba(255,255,255,0.55);
-    letter-spacing: 0.04em;
-  }
-
-  .meta-item .label {
-    color: rgba(0,180,255,0.7);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .meta-item .value {
-    color: rgba(255,255,255,0.85);
-    font-weight: 500;
-  }
-
-  .meta-sep {
-    width: 1px;
-    height: 14px;
-    background: rgba(0,120,212,0.4);
-    margin: 0 14px;
-  }
-
-  .right-block {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-    margin-left: 20px;
-  }
-
-  .sprint-badge {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: #fff;
-    background: rgba(0,120,212,0.25);
-    border: 1px solid rgba(0,120,212,0.5);
-    padding: 4px 14px;
-    border-radius: 4px;
-    letter-spacing: 0.08em;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-  }
-
-  .sprint-badge .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: #00b4ff;
-    box-shadow: 0 0 6px #00b4ff;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.8); }
-  }
-
-  .date-text {
-    font-size: 10px;
-    color: rgba(255,255,255,0.35);
-    letter-spacing: 0.06em;
-  }
-
-  .corner-tl, .corner-br {
-    position: absolute;
-    z-index: 11;
-    width: 14px; height: 14px;
-    pointer-events: none;
-  }
-  .corner-tl {
-    top: 8px; left: 8px;
-    border-top: 1.5px solid rgba(0,120,212,0.5);
-    border-left: 1.5px solid rgba(0,120,212,0.5);
-  }
-  .corner-br {
-    bottom: 8px; right: 8px;
-    border-bottom: 1.5px solid rgba(0,120,212,0.5);
-    border-right: 1.5px solid rgba(0,120,212,0.5);
-  }
-
-  .code-stream {
-    position: absolute;
-    right: 180px; top: 0; bottom: 0;
-    width: 120px;
-    z-index: 3;
-    overflow: hidden;
-    opacity: 0.07;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 3px;
-    font-size: 9px;
-    color: #00b4ff;
-    font-family: 'IBM Plex Mono', monospace;
-    line-height: 1.4;
-  }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0f1e; }
+  body { font-family: 'IBM Plex Mono', monospace; position: relative; }
+  canvas#grid { position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:0.18; }
+  .scanlines { position:absolute;inset:0;z-index:1;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(0,0,0,0.08) 3px,rgba(0,0,0,0.08) 4px);pointer-events:none; }
+  .glow-left { position:absolute;left:-60px;top:-40px;width:320px;height:220px;background:radial-gradient(ellipse at center,rgba(0,120,212,0.22) 0%,transparent 70%);z-index:1;pointer-events:none; }
+  .glow-right { position:absolute;right:0;bottom:-40px;width:260px;height:200px;background:radial-gradient(ellipse at center,rgba(0,188,242,0.1) 0%,transparent 70%);z-index:1;pointer-events:none; }
+  .container { position:relative;z-index:10;width:100%;height:100%;display:flex;align-items:center;padding:0 28px;gap:0; }
+  .logo-wrap { flex-shrink:0;display:flex;align-items:center;justify-content:center;width:72px;height:72px;border-radius:10px;background:rgba(0,120,212,0.12);border:1px solid rgba(0,120,212,0.35);margin-right:20px;position:relative;overflow:hidden; }
+  .logo-wrap img { width:52px;height:auto;position:relative;z-index:1;filter:drop-shadow(0 0 8px rgba(0,150,255,0.4)); }
+  .divider { width:1px;height:52px;background:linear-gradient(to bottom,transparent,rgba(0,120,212,0.6),transparent);margin-right:20px;flex-shrink:0; }
+  .info { flex:1;display:flex;flex-direction:column;justify-content:center;gap:5px; }
+  .squad-name { font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:#ffffff;letter-spacing:0.06em;line-height:1;text-shadow:0 0 24px rgba(0,120,212,0.5);display:flex;align-items:center;gap:10px; }
+  .squad-name .accent { color:#00b4ff; }
+  .squad-name .tag { font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:#00b4ff;background:rgba(0,180,255,0.1);border:1px solid rgba(0,180,255,0.3);padding:2px 8px;border-radius:3px;letter-spacing:0.1em; }
+  .meta { display:flex;align-items:center;flex-wrap:wrap; }
+  .meta-item { display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,0.55); }
+  .meta-item .label { color:rgba(0,180,255,0.7);font-size:10px;text-transform:uppercase;letter-spacing:0.08em; }
+  .meta-item .value { color:rgba(255,255,255,0.85);font-weight:500; }
+  .meta-sep { width:1px;height:14px;background:rgba(0,120,212,0.4);margin:0 14px; }
+  .right-block { flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px;margin-left:20px; }
+  .sprint-badge { font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#fff;background:rgba(0,120,212,0.25);border:1px solid rgba(0,120,212,0.5);padding:4px 14px;border-radius:4px;letter-spacing:0.08em;display:flex;align-items:center;gap:7px; }
+  .sprint-badge .dot { width:7px;height:7px;border-radius:50%;background:#00b4ff;box-shadow:0 0 6px #00b4ff;animation:pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)} }
+  .date-text { font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.06em; }
+  .corner-tl,.corner-br { position:absolute;z-index:11;width:14px;height:14px;pointer-events:none; }
+  .corner-tl { top:8px;left:8px;border-top:1.5px solid rgba(0,120,212,0.5);border-left:1.5px solid rgba(0,120,212,0.5); }
+  .corner-br { bottom:8px;right:8px;border-bottom:1.5px solid rgba(0,120,212,0.5);border-right:1.5px solid rgba(0,120,212,0.5); }
 </style>
 </head>
 <body>
 
+<script>
+  /* ============================================
+     CONFIGURAÇÃO — edite apenas este bloco
+     ============================================ */
+  const CONFIG = {
+    logo:        "https://i.ibb.co/fzGzYX4b/logo-DSI.png",  // URL da logo
+    squadNome:   "PORTAL LEGADO",       // Nome do squad (após "SQUAD")
+    status:      "ATIVO",               // Badge de status: ATIVO | PAUSADO | EM RISCO
+    time:        "CAP SATOLO",          // Nome do time
+    area:        "Plataforma Digital",  // Área / departamento
+    projeto:     "Portal Legado v2",    // Nome do projeto
+    sprint:      "35",                  // Número da sprint
+    sprintInicio: "19/05/2026",         // Data de início da sprint (DD/MM/AAAA)
+    sprintFim:    "01/06/2026",         // Data de fim da sprint    (DD/MM/AAAA)
+  };
+  /* ============================================
+     FIM DA CONFIGURAÇÃO
+     ============================================ */
+</script>
+
 <canvas id="grid"></canvas>
 <div class="scanlines"></div>
-<div class="noise"></div>
 <div class="glow-left"></div>
 <div class="glow-right"></div>
 <div class="corner-tl"></div>
 <div class="corner-br"></div>
 
-<div class="code-stream" id="codeStream"></div>
-
 <div class="container">
   <div class="logo-wrap">
-    <img src="https://i.ibb.co/fzGzYX4b/logo-DSI.png" alt="Logo DSI"/>
+    <img id="logo" alt="Logo"/>
   </div>
-
   <div class="divider"></div>
-
   <div class="info">
     <div class="squad-name">
-      <span>SQUAD <span class="accent">PORTAL LEGADO</span></span>
-     <!--  <span class="tag">ATIVO</span> -->
+      SQUAD <span class="accent" id="squadNome"></span>
+      <span class="tag" id="statusTag"></span>
     </div>
     <div class="meta">
-      <div class="meta-item">
-        <span class="label">Time</span>
-        <span class="value">CAP SATOLO</span>
-      </div>
+      <div class="meta-item"><span class="label">Time</span><span class="value" id="time"></span></div>
       <div class="meta-sep"></div>
-      <div class="meta-item">
-        <span class="label">Tipo</span>
-        <span class="value">WEB</span>
-      </div>
+      <div class="meta-item"><span class="label">Área</span><span class="value" id="area"></span></div>
       <div class="meta-sep"></div>
-      <div class="meta-item">
-        <span class="label">Unidade</span>
-        <span class="value">DSI</span>
-      </div>
+      <div class="meta-item"><span class="label">Projeto</span><span class="value" id="projeto"></span></div>
     </div>
   </div>
-
   <div class="right-block">
     <div class="sprint-badge">
       <div class="dot"></div>
-      SPRINT 35
+      SPRINT <span id="sprint"></span>
     </div>
-    <div class="date-text" id="nowDate"></div>
+    <div class="date-text" id="sprintDates"></div>
+    <div class="date-text" id="diasRestantes"></div>
   </div>
 </div>
 
 <script>
-  const d = new Date();
-  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  document.getElementById('nowDate').textContent =
-    d.getDate().toString().padStart(2,'0') + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+  document.getElementById('logo').src              = CONFIG.logo;
+  document.getElementById('squadNome').textContent = CONFIG.squadNome;
+  document.getElementById('statusTag').textContent = CONFIG.status;
+  document.getElementById('time').textContent      = CONFIG.time;
+  document.getElementById('area').textContent      = CONFIG.area;
+  document.getElementById('projeto').textContent   = CONFIG.projeto;
+  document.getElementById('sprint').textContent    = CONFIG.sprint;
+
+  document.getElementById('sprintDates').textContent =
+    CONFIG.sprintInicio + ' → ' + CONFIG.sprintFim;
+
+  function parseDate(str) {
+    const [d, m, y] = str.split('/').map(Number);
+    return new Date(y, m - 1, d);
+  }
+  const hoje = new Date();
+  const fim  = parseDate(CONFIG.sprintFim);
+  const diff = Math.ceil((fim - hoje) / (1000 * 60 * 60 * 24));
+  const diasEl = document.getElementById('diasRestantes');
+  if (diff > 0) {
+    diasEl.textContent = diff + (diff === 1 ? ' dia restante' : ' dias restantes');
+    diasEl.style.color = diff <= 3 ? 'rgba(255,160,60,0.7)' : 'rgba(255,255,255,0.35)';
+  } else if (diff === 0) {
+    diasEl.textContent = 'Último dia da sprint';
+    diasEl.style.color = 'rgba(255,100,100,0.8)';
+  } else {
+    diasEl.textContent = 'Sprint encerrada';
+    diasEl.style.color = 'rgba(255,255,255,0.2)';
+  }
 
   const canvas = document.getElementById('grid');
   const ctx = canvas.getContext('2d');
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    drawGrid();
-  }
   function drawGrid() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = 'rgba(0,120,212,0.9)';
-    ctx.lineWidth = 0.5;
-    const step = 28;
-    for (let x = 0; x <= canvas.width; x += step) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-    }
-    for (let y = 0; y <= canvas.height; y += step) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-    }
-    const dotR = 1.2;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    ctx.strokeStyle = 'rgba(0,120,212,0.9)'; ctx.lineWidth = 0.5;
+    const s = 28;
+    for (let x = 0; x <= canvas.width; x += s) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,canvas.height); ctx.stroke(); }
+    for (let y = 0; y <= canvas.height; y += s) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke(); }
     ctx.fillStyle = 'rgba(0,180,255,0.7)';
-    for (let x = 0; x <= canvas.width; x += step) {
-      for (let y = 0; y <= canvas.height; y += step) {
-        ctx.beginPath(); ctx.arc(x, y, dotR, 0, Math.PI * 2); ctx.fill();
-      }
-    }
+    for (let x = 0; x <= canvas.width; x += s)
+      for (let y = 0; y <= canvas.height; y += s) { ctx.beginPath(); ctx.arc(x,y,1.2,0,Math.PI*2); ctx.fill(); }
   }
-  resize();
-  window.addEventListener('resize', resize);
-
-  const snippets = ['if (env === "PROD")', 'git push origin main', 'npm run build', 'status: 200 OK', 'sprint.start()', 'deploy --env prod', 'git merge feature/', 'test: ✓ passed', 'pipeline: success', 'reviewed & merged'];
-  const cs = document.getElementById('codeStream');
-  snippets.forEach(s => {
-    const el = document.createElement('div');
-    el.textContent = s;
-    cs.appendChild(el);
-  });
+  drawGrid();
+  window.addEventListener('resize', drawGrid);
 </script>
 </body>
 </html>
